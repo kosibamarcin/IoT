@@ -43,17 +43,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-      setVariables();
-    });
-  }
-
-  Future<String> getText() async {
-    List<double> list = await testDownloadImage();
+  Future<String> getData() async {
+    List<double> list = await downloadData();
     _humidity = list[0];
     _temparature = list[1];
     return '0';
@@ -62,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
-        future: getText(),
+        future: getData(),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return mainContent(context);
@@ -130,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<List<double>> testDownloadImage() async {
+Future<List<double>> downloadData() async {
   var storage = AzureStorage.parse(connectionString);
   List<double> list = [0, 0];
   try {
@@ -145,10 +136,4 @@ Future<List<double>> testDownloadImage() async {
     print('exception: $e');
   }
   return list;
-}
-
-void setVariables() async {
-  List<double> list = await testDownloadImage();
-  _humidity = list[0];
-  _temparature = list[1];
 }
