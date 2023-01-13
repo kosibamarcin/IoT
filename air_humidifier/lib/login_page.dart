@@ -1,5 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'package:azstore/azstore.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+
+const connectionString =
+    'DefaultEndpointsProtocol=https;AccountName=devicemessages12;AccountKey=jfyoNHVw54+5yjC17N2JGFYvknwoUnY9t8YE4UBluHGfuor88+xwlBYOuT/ejuBBeC2MkzoUtkzq+AStZwffPQ==;EndpointSuffix=core.windows.net';
+bool showError = false;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,13 +25,37 @@ class _LoginPageState extends State<LoginPage> {
   // 	await getEmail()
   // }
 
-  signIn() {
-    print(_emailCotroller.text.trim());
-    print(_passwordController.text.trim());
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MyHomePage(title: 'Home Page')));
+  signIn() async {
+    setState(() => showError = false);
+    String providedEmail = _emailCotroller.text.trim();
+    String providedPassword = _passwordController.text.trim();
+    var password = sha256.convert(utf8.encode(providedPassword));
+    String folder = await testGetTableRow(providedEmail, password);
+    if (folder != '0') {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyHomePage(
+                  title: 'Home Page', email: providedEmail, folder: folder)));
+    }
+  }
+
+  Future<String> testGetTableRow(String email, password) async {
+    var storage = AzureStorage.parse(connectionString);
+    try {
+      String result = await storage.getTableRow(
+          tableName: 'Users',
+          partitionKey: '1',
+          rowKey: email,
+          fields: ['password', 'folder']);
+      var data = jsonDecode(result);
+      if (password.toString() == data["password"]) {
+        return data["folder"];
+      }
+    } catch (e) {
+      setState(() => showError = true);
+    }
+    return '0';
   }
 
   @override
@@ -93,7 +126,24 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(
-                height: 25,
+                height: 10,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 25.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    showError ? 'Wrong credentials' : '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),

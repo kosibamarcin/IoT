@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'login_page.dart';
+import 'package:wifi_scan/wifi_scan.dart';
 
 const connectionString =
     'DefaultEndpointsProtocol=https;AccountName=devicemessages12;AccountKey=jfyoNHVw54+5yjC17N2JGFYvknwoUnY9t8YE4UBluHGfuor88+xwlBYOuT/ejuBBeC2MkzoUtkzq+AStZwffPQ==;EndpointSuffix=core.windows.net';
@@ -35,21 +36,21 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
   final String title;
+  final String email;
+  final String folder;
+
+  const MyHomePage(
+      {super.key,
+      required this.title,
+      required this.email,
+      required this.folder});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<String> getData() async {
-    List<double> list = await downloadData();
-    _humidity = list[0];
-    _temparature = list[1];
-    return '0';
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
@@ -61,6 +62,31 @@ class _MyHomePageState extends State<MyHomePage> {
             return progress();
           }
         });
+  }
+
+  Future<String> getData() async {
+    List<double> list = await downloadData();
+    // print(await _startScan());
+    _humidity = list[0];
+    _temparature = list[1];
+    return '0';
+  }
+
+  Future<List<double>> downloadData() async {
+    var storage = AzureStorage.parse(connectionString);
+    List<double> list = [0, 0];
+    try {
+      var result = await storage
+          .getBlob('/messages/iot-stm-hub/02/2022/12/23/10/58.json');
+      var code = result.statusCode;
+      var stream = result.stream;
+      var data = jsonDecode(await stream.transform(utf8.decoder).join());
+      list[0] = double.parse(data[0]["Properties"]["temperature"]);
+      list[1] = double.parse(data[0]["Properties"]["humidity"]);
+    } catch (e) {
+      print('exception: $e');
+    }
+    return list;
   }
 
   progress() {
@@ -90,6 +116,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(
+              "Welcome ${widget.email}!",
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            SizedBox(
+              height: 150,
+            ),
             Text(
               'Data',
               style: Theme.of(context).textTheme.headline5,
@@ -121,19 +154,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<List<double>> downloadData() async {
-  var storage = AzureStorage.parse(connectionString);
-  List<double> list = [0, 0];
-  try {
-    var result =
-        await storage.getBlob('/messages/iot-stm-hub/02/2022/12/23/10/58.json');
-    var code = result.statusCode;
-    var stream = result.stream;
-    var data = jsonDecode(await stream.transform(utf8.decoder).join());
-    list[0] = double.parse(data[0]["Properties"]["temperature"]);
-    list[1] = double.parse(data[0]["Properties"]["humidity"]);
-  } catch (e) {
-    print('exception: $e');
+Future<String> _startScan() async {
+  // check platform support and necessary requirements
+  final can = await WiFiScan.instance.canStartScan(askPermissions: true);
+  switch (can) {
+    case CanStartScan.yes:
+      // start full scan async-ly
+      final isScanning = await WiFiScan.instance.startScan();
+      return isScanning.toString();
+      //...
+      break;
+    default:
+      return "noooo";
   }
-  return list;
 }

@@ -123,6 +123,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  modal_progress_hud:
+    dependency: "direct main"
+    description:
+      name: modal_progress_hud
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3"
   path:
     dependency: transitive
     description:
@@ -205,6 +212,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  wifi_iot:
+    dependency: "direct main"
+    description:
+      name: wifi_iot
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.18"
+  wifi_scan:
+    dependency: "direct main"
+    description:
+      name: wifi_scan
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0+1"
   xml:
     dependency: transitive
     description:
@@ -214,3 +235,4 @@ packages:
     version: "6.1.0"
 sdks:
   dart: ">=2.18.6 <3.0.0"
+  flutter: ">=3.0.0"
