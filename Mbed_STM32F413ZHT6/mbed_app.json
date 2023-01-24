@@ -14,8 +14,8 @@
             "target.components_add": ["wifi_ism43362"],
             "target.network-default-interface-type": "WIFI",
             "nsapi.default-wifi-security": "WPA_WPA2",
-            "nsapi.default-wifi-ssid": "\"ARRIS-D2BE\"",
-            "nsapi.default-wifi-password": "\"279416FA248A9185\""
+            "nsapi.default-wifi-ssid": "\"iPhoneMarcin\"",
+            "nsapi.default-wifi-password": "\"12345678\""
         },
         "EP_AGORA": {
             "nsapi.default-cellular-apn"                : "\"APN\"",

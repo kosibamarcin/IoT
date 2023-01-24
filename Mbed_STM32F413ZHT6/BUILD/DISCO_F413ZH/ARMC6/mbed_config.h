@@ -23,6 +23,7 @@
 
 // Configuration parameters
 #define CLOCK_SOURCE                                                          USE_PLL_HSE_EXTC|USE_PLL_HSI                                                                     // set by target:MCU_STM32F4
+#define HTTP_RECEIVE_BUFFER_SIZE                                              8192                                                                                             // set by library:mbed-http
 #define LPTICKER_DELAY_TICKS                                                  4                                                                                                // set by target:MCU_STM32F413xH
 #define MBED_CONF_ALT1250_PPP_BAUDRATE                                        115200                                                                                           // set by library:ALT1250_PPP
 #define MBED_CONF_ALT1250_PPP_PROVIDE_DEFAULT                                 0                                                                                                // set by library:ALT1250_PPP
@@ -262,9 +263,9 @@
 #define MBED_CONF_NSAPI_ADD_EVENT_LISTENER_RETURN_CHANGE                      0                                                                                                // set by library:nsapi
 #define MBED_CONF_NSAPI_DEFAULT_MESH_TYPE                                     THREAD                                                                                           // set by library:nsapi
 #define MBED_CONF_NSAPI_DEFAULT_STACK                                         LWIP                                                                                             // set by library:nsapi
-#define MBED_CONF_NSAPI_DEFAULT_WIFI_PASSWORD                                 "279416FA248A9185"                                                                               // set by application[DISCO_F413ZH]
+#define MBED_CONF_NSAPI_DEFAULT_WIFI_PASSWORD                                 "12345678"                                                                                       // set by application[DISCO_F413ZH]
 #define MBED_CONF_NSAPI_DEFAULT_WIFI_SECURITY                                 WPA_WPA2                                                                                         // set by application[DISCO_F413ZH]
-#define MBED_CONF_NSAPI_DEFAULT_WIFI_SSID                                     "ARRIS-D2BE"                                                                                     // set by application[DISCO_F413ZH]
+#define MBED_CONF_NSAPI_DEFAULT_WIFI_SSID                                     "iPhoneMarcin"                                                                                   // set by application[DISCO_F413ZH]
 #define MBED_CONF_NSAPI_DNS_ADDRESSES_LIMIT                                   10                                                                                               // set by library:nsapi
 #define MBED_CONF_NSAPI_DNS_CACHE_SIZE                                        3                                                                                                // set by library:nsapi
 #define MBED_CONF_NSAPI_DNS_RESPONSE_WAIT_TIME                                10000                                                                                            // set by library:nsapi
@@ -436,7 +437,7 @@
 // Macros
 #define DONT_USE_UPLOADTOBLOB                                                                                                                                                  // defined by library:azure-client
 #define MBEDTLS_CIPHER_MODE_CTR                                                                                                                                                // defined by library:SecureStore
-#define MBEDTLS_SHA1_C                                                                                                                                                         // defined by library:azure-client
+#define MBEDTLS_SHA1_C                                                                                                                                                         // defined by library:mbed-http
 #define MBEDTLS_SSL_MAX_CONTENT_LEN                                           4096                                                                                             // defined by library:azure-client
 #define NSAPI_PPP_AVAILABLE                                                   (MBED_CONF_PPP_ENABLED || MBED_CONF_LWIP_PPP_ENABLED)                                            // defined by library:ppp
 #define NSDYNMEM_TRACKER_ENABLED                                              MBED_CONF_NANOSTACK_LIBSERVICE_NSDYNMEM_TRACKER_ENABLED                                          // defined by library:nanostack-libservice

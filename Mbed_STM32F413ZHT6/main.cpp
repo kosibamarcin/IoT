@@ -56,7 +56,7 @@ static void on_message_sent(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* user
     }
 }
 
-void demo() {
+void send_messages() {
     bool trace_on = MBED_CONF_APP_IOTHUB_CLIENT_TRACE;
     tickcounter_ms_t interval = 100;
     IOTHUB_CLIENT_RESULT res;
@@ -112,13 +112,12 @@ void demo() {
     // or until we receive a message from the cloud
     IOTHUB_MESSAGE_HANDLE message_handle;
     char message[80];
-    for (int i = 0; i < 10; ++i) {
+    while(true) {
         if (message_received) {
             // If we have received a message from the cloud, don't send more messeges
             break;
         }
 
-        sprintf(message, "%d messages left to send, or until we receive a reply", 10 - i);
         LogInfo("Sending: \"%s\"", message);
 
         message_handle = IoTHubMessage_CreateFromString(message);
@@ -136,7 +135,7 @@ void demo() {
             goto cleanup;
         }
 
-        ThisThread::sleep_for(1s);
+        ThisThread::sleep_for(120s);
     }
 
     // If the user didn't manage to send a cloud-to-device message earlier,
@@ -180,9 +179,9 @@ int main() {
     LogInfo("Time: %s", ctime(&timestamp));
     set_time(timestamp);
 
-    LogInfo("Starting the Demo");
-    demo();
-    LogInfo("The demo has ended");
+    LogInfo("Starting sending messages");
+    send_messages();
+    LogInfo("Sending messages has ended");
 
     return 0;
 }
