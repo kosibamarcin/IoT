@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
-        future: getData(),
+        future: getData(widget.folder),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return mainContent(context);
@@ -64,25 +64,24 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  Future<String> getData() async {
-    List<double> list = await downloadData();
+  Future<String> getData(String folder) async {
+    List<double> list = await downloadData(folder);
     // print(await _startScan());
-    _humidity = list[0];
-    _temparature = list[1];
+    setState(() => _humidity = list[0]);
+    setState(() => _temparature = list[1]);
     return '0';
   }
 
-  Future<List<double>> downloadData() async {
+  Future<List<double>> downloadData(String folder) async {
     var storage = AzureStorage.parse(connectionString);
     List<double> list = [0, 0];
     try {
-      var result = await storage
-          .getBlob('/messages/iot-stm-hub/02/2022/12/23/10/58.json');
+      var result = await storage.getBlob(folder + '/data_ready.json');
       var code = result.statusCode;
       var stream = result.stream;
       var data = jsonDecode(await stream.transform(utf8.decoder).join());
-      list[0] = double.parse(data[0]["Properties"]["temperature"]);
-      list[1] = double.parse(data[0]["Properties"]["humidity"]);
+      list[0] = double.parse(data["Properties"]["temperature"]);
+      list[1] = double.parse(data["Properties"]["humidity"]);
     } catch (e) {
       print('exception: $e');
     }
