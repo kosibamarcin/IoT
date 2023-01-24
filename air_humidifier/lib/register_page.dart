@@ -1,37 +1,63 @@
-import 'dart:math';
+import 'dart:js_util';
 
+import 'package:air_humidifier/main.dart';
 import 'package:flutter/material.dart';
-import 'main.dart';
 import 'package:azstore/azstore.dart';
-import 'package:crypto/crypto.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:convert';
-import 'register_page.dart';
+import 'package:crypto/crypto.dart';
 
 const connectionString =
     'DefaultEndpointsProtocol=https;AccountName=devicemessages12;AccountKey=jfyoNHVw54+5yjC17N2JGFYvknwoUnY9t8YE4UBluHGfuor88+xwlBYOuT/ejuBBeC2MkzoUtkzq+AStZwffPQ==;EndpointSuffix=core.windows.net';
-bool showError = false;
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+// signUp() async {
+//   Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//             builder: (context) => MyHomePage(
+//                 title: 'Home Page', email: providedEmail, folder: folder)));
+// }
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _LoginPageState extends State<LoginPage> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+      ),
+      home: const RegisterPage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({required this.title});
+  final String title;
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final _emailCotroller = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // Future signIn() async {
-  // 	await getEmail()
-  // }
-
-  signIn() async {
-    setState(() => showError = false);
+  signUp() async {
+    // setState(() => showError = false);
     String providedEmail = _emailCotroller.text.trim();
     String providedPassword = _passwordController.text.trim();
     var password = sha256.convert(utf8.encode(providedPassword));
-    String folder = await testGetTableRow(providedEmail, password);
+    String folder = await testPutTableRow(providedEmail, password);
     if (folder != '0') {
       Navigator.push(
           context,
@@ -41,51 +67,41 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<String> testGetTableRow(String email, password) async {
+  Future<String> testPutTableRow(String email, password) async {
     var storage = AzureStorage.parse(connectionString);
     try {
-      String result = await storage.getTableRow(
+      var result = await storage.putTableRow(
           tableName: 'Users',
           partitionKey: '1',
           rowKey: email,
-          fields: ['password', 'folder']);
-      var data = jsonDecode(result);
-      if (password.toString() == data["password"]) {
-        return data["folder"];
-      }
+          bodyMap: {"password": password, "folder": "iot-stm-hub"});
+      // var data = jsonDecode(r.esult);
+      // if (password.toString() == data["password"]) {
+      //   return data["folder"];
+      // }
     } catch (e) {
-      setState(() => showError = true);
+      // setState(() => showError = true);
     }
     return '0';
   }
 
-  signUp() async {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RegisterPage(title: 'Home Page')));
-  }
-
   @override
   Widget build(BuildContext context) {
+    // List<double> list = await testDownloadImage();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 219, 214, 219),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(
-                'Hello',
+                'Create an account',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
-                ),
-              ),
-              Text(
-                'Please, log in to use your device',
-                style: TextStyle(
-                  fontSize: 18,
                 ),
               ),
               SizedBox(
@@ -102,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
-                    controller: _emailCotroller,
+                    // controller: _emailCotroller,
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Email',
@@ -124,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
-                    controller: _passwordController,
+                    // controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -134,49 +150,26 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 25,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    showError ? 'Wrong credentials' : '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: Colors.red,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 228, 243),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 238, 229, 239),
                     ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: GestureDetector(
-                  onTap: signIn,
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                        color: Colors.purple[600],
-                        borderRadius: BorderRadius.circular(13)),
-                    child: Center(
-                        child: Text(
-                      'Sign In',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    )),
+                  child: TextField(
+                    // controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Repeat password',
+                        contentPadding: EdgeInsets.only(left: 10.0)),
                   ),
-                ),
-              ),
-              Text(
-                "Don't have an account?",
-                style: TextStyle(
-                  fontSize: 18,
                 ),
               ),
               SizedBox(
@@ -193,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(13)),
                     child: Center(
                         child: Text(
-                      'Sign Up',
+                      'Register',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
