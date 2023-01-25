@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:air_humidifier/menu.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:azstore/azstore.dart';
@@ -10,7 +7,7 @@ import 'register_page.dart';
 
 const connectionString =
     'DefaultEndpointsProtocol=https;AccountName=devicemessages12;AccountKey=jfyoNHVw54+5yjC17N2JGFYvknwoUnY9t8YE4UBluHGfuor88+xwlBYOuT/ejuBBeC2MkzoUtkzq+AStZwffPQ==;EndpointSuffix=core.windows.net';
-bool showError = false;
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,30 +17,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _emailCotroller = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // Future signIn() async {
-  // 	await getEmail()
-  // }
+  bool showError = false;
 
   signIn() async {
     setState(() => showError = false);
-    String providedEmail = _emailCotroller.text.trim();
+    String providedEmail = _emailController.text.trim();
     String providedPassword = _passwordController.text.trim();
     var password = sha256.convert(utf8.encode(providedPassword));
     String folder = await testGetTableRow(providedEmail, password);
     if (folder != '0') {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder:
-                  (context) => /*MyHomePage(
-                  title: 'Home Page', email: providedEmail, folder: folder)*/
-                      MenuPage(
-                          title: 'Home Page',
-                          email: providedEmail,
-                          folder: folder)));
+      navigateToMainPage(providedEmail, folder);
     }
   }
 
@@ -58,18 +43,27 @@ class _LoginPageState extends State<LoginPage> {
       var data = jsonDecode(result);
       if (password.toString() == data["password"]) {
         return data["folder"];
+      } else {
+        return '0';
       }
     } catch (e) {
       setState(() => showError = true);
+      return '0';
     }
-    return '0';
   }
 
   signUp() async {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => RegisterPage(title: 'Home Page')));
+            builder: (context) => const RegisterPage(title: 'Sign up')));
+  }
+
+  navigateToMainPage(String providedEmail, String folder) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MyHomePage(title: 'Home Page', email: providedEmail, folder: folder)));
   }
 
   @override
@@ -80,132 +74,135 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: SingleChildScrollView(
             child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                'Hello',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              Text(
-                'Please, log in to use your device',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(
-                height: 35,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 228, 243),
-                    border: Border.all(
-                      color: Color.fromARGB(255, 238, 229, 239),
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextField(
-                    controller: _emailCotroller,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Email',
-                        contentPadding: EdgeInsets.only(left: 10.0)),
+              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Text(
+                  'Hello',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 228, 243),
-                    border: Border.all(
-                      color: Color.fromARGB(255, 238, 229, 239),
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Password',
-                        contentPadding: EdgeInsets.only(left: 10.0)),
+                const Text(
+                  'Please, log in to use your device',
+                  style: TextStyle(
+                    fontSize: 18,
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    showError ? 'Wrong credentials' : '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: Colors.red,
-                    ),
-                  ),
+                const SizedBox(
+                  height: 35,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: GestureDetector(
-                  onTap: signIn,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
-                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                        color: Colors.purple[600],
-                        borderRadius: BorderRadius.circular(13)),
-                    child: Center(
-                        child: Text(
-                      'Sign In',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    )),
+                      color: Color.fromARGB(255, 241, 228, 243),
+                      border: Border.all(
+                        color: Color.fromARGB(255, 238, 229, 239),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Email',
+                          contentPadding: EdgeInsets.only(left: 10.0)),
+                    ),
                   ),
                 ),
-              ),
-              Text(
-                "Don't have an account?",
-                style: TextStyle(
-                  fontSize: 18,
+                const SizedBox(
+                  height: 25,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: GestureDetector(
-                  onTap: signUp,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
-                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                        color: Colors.purple[600],
-                        borderRadius: BorderRadius.circular(13)),
-                    child: Center(
-                        child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    )),
+                      color: const Color.fromARGB(255, 241, 228, 243),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 238, 229, 239),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Password',
+                          contentPadding: EdgeInsets.only(left: 10.0)),
+                    ),
                   ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      showError ? 'Wrong credentials' : '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: GestureDetector(
+                    onTap: signIn,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: Colors.purple[600],
+                          borderRadius: BorderRadius.circular(13)),
+                      child: const Center(
+                          child: Text(
+                        'Sign In',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: GestureDetector(
+                    onTap: signUp,
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: Colors.purple[600],
+                          borderRadius: BorderRadius.circular(13)),
+                      child: const Center(
+                          child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "Don't have an account?",
+                  style: TextStyle(
+                    fontSize: 18,
                 ),
               ),
             ]),

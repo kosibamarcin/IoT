@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:air_humidifier/menu.dart';
 import 'package:air_humidifier/login_page.dart';
 import 'package:air_humidifier/main.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +14,6 @@ import 'package:crypto/crypto.dart';
 const connectionString =
     'DefaultEndpointsProtocol=https;AccountName=devicemessages12;AccountKey=jfyoNHVw54+5yjC17N2JGFYvknwoUnY9t8YE4UBluHGfuor88+xwlBYOuT/ejuBBeC2MkzoUtkzq+AStZwffPQ==;EndpointSuffix=core.windows.net';
 
-// signUp() async {
-//   Navigator.push(
-//         context,
-//         MaterialPageRoute(
-//             builder: (context) => MyHomePage(
-//                 title: 'Home Page', email: providedEmail, folder: folder)));
-// }
-
 void main() {
   runApp(const MyApp());
 }
@@ -28,7 +21,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,26 +42,30 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _emailCotroller = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   signUp() async {
-    // setState(() => showError = false);
-    String providedEmail = _emailCotroller.text.trim();
+    String providedEmail = _emailController.text.trim();
     String providedPassword = _passwordController.text.trim();
     var password = sha256.convert(utf8.encode(providedPassword));
     String folder = await testPutTableRow(providedEmail, password);
     if (folder != '0') {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+          context,
+          MaterialPageRoute(
+              builder:
+                  (context) =>
+                      MenuPage(
+                          title: 'Choose device',
+                          email: providedEmail,
+                          folder: folder)));
     }
   }
 
   Future<String> testPutTableRow(String email, password) async {
     var storage = AzureStorage.parse(connectionString);
     try {
-      print(email);
-      print(password.toString());
       Map<String, dynamic> rowMap = {
         "password": password.toString(),
         "folder": 'outcontainer'
@@ -90,7 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       print(e.toString());
-      // setState(() => showError = true);
     }
     return '0';
   }
@@ -107,14 +102,14 @@ class _RegisterPageState extends State<RegisterPage> {
           child: SingleChildScrollView(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
+              const Text(
                 'Create an account',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 35,
               ),
               Padding(
@@ -128,15 +123,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
-                    controller: _emailCotroller,
-                    decoration: InputDecoration(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Email',
                         contentPadding: EdgeInsets.only(left: 10.0)),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               Padding(
@@ -152,27 +147,27 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Password',
                         contentPadding: EdgeInsets.only(left: 10.0)),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 228, 243),
+                    color: const Color.fromARGB(255, 241, 228, 243),
                     border: Border.all(
-                      color: Color.fromARGB(255, 238, 229, 239),
+                      color: const Color.fromARGB(255, 238, 229, 239),
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: TextField(
+                  child: const TextField(
                     // controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
@@ -182,7 +177,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
@@ -190,11 +185,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: GestureDetector(
                   onTap: signUp,
                   child: Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                         color: Colors.purple[600],
                         borderRadius: BorderRadius.circular(13)),
-                    child: Center(
+                    child: const Center(
                         child: Text(
                       'Register',
                       style: TextStyle(
