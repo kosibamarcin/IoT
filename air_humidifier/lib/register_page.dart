@@ -1,4 +1,3 @@
-import 'dart:js_util';
 import 'dart:math';
 
 import 'package:air_humidifier/main.dart';
@@ -71,11 +70,17 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<String> testPutTableRow(String email, password) async {
     var storage = AzureStorage.parse(connectionString);
     try {
-      await storage.putTableRow(
+      print(email);
+      print(password.toString());
+      Map<String, dynamic> rowMap = {
+        "password": password.toString(),
+        "folder": 'outcontainer'
+      };
+      await storage.upsertTableRow(
           tableName: 'Users',
           partitionKey: '1',
           rowKey: email,
-          bodyMap: {"password": password, "folder": "outcontainer"});
+          bodyMap: rowMap);
       String result = await storage.getTableRow(
           tableName: 'Users',
           partitionKey: '1',
