@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:air_humidifier/menu.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:azstore/azstore.dart';
@@ -36,8 +37,13 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => MyHomePage(
-                  title: 'Home Page', email: providedEmail, folder: folder)));
+              builder:
+                  (context) => /*MyHomePage(
+                  title: 'Home Page', email: providedEmail, folder: folder)*/
+                      MenuPage(
+                          title: 'Home Page',
+                          email: providedEmail,
+                          folder: folder)));
     }
   }
 

@@ -1,5 +1,6 @@
 // import 'dart:ffi's;
 
+import 'package:air_humidifier/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:azstore/azstore.dart';
 import 'dart:async';
@@ -39,8 +40,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
   final String email;
   final String folder;
+  List<String> devices = ['1', '2', '3'];
+  String? selectedItem = '1';
 
-  const MyHomePage(
+  MyHomePage(
       {super.key,
       required this.title,
       required this.email,
@@ -145,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               'Current temperature: $_temparature°C',
-            )
+            ),
           ],
         ),
       ),

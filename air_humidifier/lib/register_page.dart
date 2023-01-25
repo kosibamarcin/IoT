@@ -1,6 +1,7 @@
 import 'dart:js_util';
 import 'dart:math';
 
+import 'package:air_humidifier/login_page.dart';
 import 'package:air_humidifier/main.dart';
 import 'package:flutter/material.dart';
 import 'package:azstore/azstore.dart';
@@ -61,21 +62,24 @@ class _RegisterPageState extends State<RegisterPage> {
     String folder = await testPutTableRow(providedEmail, password);
     if (folder != '0') {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MyHomePage(
-                  title: 'Home Page', email: providedEmail, folder: folder)));
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
 
   Future<String> testPutTableRow(String email, password) async {
     var storage = AzureStorage.parse(connectionString);
     try {
-      await storage.putTableRow(
+      print(email);
+      print(password.toString());
+      Map<String, dynamic> rowMap = {
+        "password": password.toString(),
+        "folder": 'outcontainer'
+      };
+      await storage.upsertTableRow(
           tableName: 'Users',
           partitionKey: '1',
           rowKey: email,
-          bodyMap: {"password": password, "folder": "outcontainer"});
+          bodyMap: rowMap);
       String result = await storage.getTableRow(
           tableName: 'Users',
           partitionKey: '1',
