@@ -1,4 +1,5 @@
 import 'dart:js_util';
+import 'dart:math';
 
 import 'package:air_humidifier/main.dart';
 import 'package:flutter/material.dart';
@@ -70,16 +71,22 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<String> testPutTableRow(String email, password) async {
     var storage = AzureStorage.parse(connectionString);
     try {
-      var result = await storage.putTableRow(
+      await storage.putTableRow(
           tableName: 'Users',
           partitionKey: '1',
           rowKey: email,
-          bodyMap: {"password": password, "folder": "iot-stm-hub"});
-      // var data = jsonDecode(r.esult);
-      // if (password.toString() == data["password"]) {
-      //   return data["folder"];
-      // }
+          bodyMap: {"password": password, "folder": "outcontainer"});
+      String result = await storage.getTableRow(
+          tableName: 'Users',
+          partitionKey: '1',
+          rowKey: email,
+          fields: ['password', 'folder']);
+      var data = jsonDecode(result);
+      if (password.toString() == data["password"]) {
+        return data["folder"];
+      }
     } catch (e) {
+      print(e.toString());
       // setState(() => showError = true);
     }
     return '0';
@@ -118,7 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
-                    // controller: _emailCotroller,
+                    controller: _emailCotroller,
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Email',
@@ -140,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
-                    // controller: _passwordController,
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                         border: InputBorder.none,
