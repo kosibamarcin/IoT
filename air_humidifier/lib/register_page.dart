@@ -44,26 +44,50 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool showError = false;
 
   signUp() async {
     String providedEmail = _emailController.text.trim();
     String providedPassword = _passwordController.text.trim();
     var password = sha256.convert(utf8.encode(providedPassword));
-    String folder = await testPutTableRow(providedEmail, password);
-    if (folder != '0') {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder:
-                  (context) =>
-                      MenuPage(
-                          title: 'Choose device',
-                          email: providedEmail,
-                          folder: folder)));
+    bool exists = await checkIfUserExists(providedEmail);
+    if (!exists) {
+      String result = await addUserToDB(providedEmail, password);
+      if (result != '0') {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder:
+                    (context) =>
+                    MenuPage(
+                        title: 'Choose device',
+                        email: providedEmail)));
+      }
     }
   }
 
-  Future<String> testPutTableRow(String email, password) async {
+  Future<bool> checkIfUserExists(String email) async {
+    var storage = AzureStorage.parse(connectionString);
+    try {
+      String result = await storage.getTableRow(
+          tableName: 'Users',
+          partitionKey: '1',
+          rowKey: email,
+          fields: ['folder']);
+      var data = jsonDecode(result);
+      setState(() {
+        showError = true;
+      });
+      return true;
+    } catch (e) {
+      setState(() {
+        showError = false;
+      });
+      return false;
+    }
+  }
+
+  Future<String> addUserToDB(String email, password) async {
     var storage = AzureStorage.parse(connectionString);
     try {
       Map<String, dynamic> rowMap = {
@@ -75,19 +99,10 @@ class _RegisterPageState extends State<RegisterPage> {
           partitionKey: '1',
           rowKey: email,
           bodyMap: rowMap);
-      String result = await storage.getTableRow(
-          tableName: 'Users',
-          partitionKey: '1',
-          rowKey: email,
-          fields: ['password', 'folder']);
-      var data = jsonDecode(result);
-      if (password.toString() == data["password"]) {
-        return data["folder"];
-      }
+      return 'ok';
     } catch (e) {
-      print(e.toString());
+      return '0';
     }
-    return '0';
   }
 
   @override
@@ -200,6 +215,23 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      showError ? 'User already exists' : '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
             ]),
           ),
         ),

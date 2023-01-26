@@ -11,24 +11,20 @@ const connectionString =
 class MenuPage extends StatefulWidget {
   final String title;
   final String email;
-  final String folder;
   const MenuPage(
       {super.key,
       required this.title,
-      required this.email,
-      required this.folder});
+      required this.email});
 
   @override
   _MenuPageState createState() => _MenuPageState();
 }
 
 class _MenuPageState extends State<MenuPage> {
-  // Initial Selected Value
   final _deviceController = TextEditingController();
   bool showError = false;
 
   getDevice() async {
-    print('trying');
     String deviceName = _deviceController.text.trim();
     String folder = await getDevicesFolder(deviceName);
     if (folder != '0') {
